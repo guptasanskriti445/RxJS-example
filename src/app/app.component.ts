@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Observable } from 'rxjs';
 import { filter, map } from 'rxjs/operators';
 @Component({
@@ -6,8 +6,9 @@ import { filter, map } from 'rxjs/operators';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css'],
 })
-export class AppComponent implements OnInit {
+export class AppComponent implements OnInit, OnDestroy {
   name = 'Angular';
+  streamsubscribe: any;
   AsyncStream(observer) {
     var t1 = setInterval(() => {
       observer.next(Math.random() * 10);
@@ -21,9 +22,14 @@ export class AppComponent implements OnInit {
   step2stream = this.step1stream.pipe(filter((x: number) => x > 4));
   ngOnInit() {
     // this.myobserv.subscribe((res) => this.Listener(res));
-    this.step2stream.subscribe((res) => this.Listener(res));
+    this.streamsubscribe = this.step2stream.subscribe((res) =>
+      this.Listener(res)
+    );
   }
   Listener(res: any) {
     console.log(res);
+  }
+  ngOnDestroy() {
+    this.streamsubscribe.unSubscribe();
   }
 }
